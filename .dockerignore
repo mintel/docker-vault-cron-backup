@@ -1,0 +1,4 @@
+*
+!bin
+!crontabs
+bin/tests
