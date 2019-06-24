@@ -49,14 +49,14 @@ mkdir -p "${STORAGE_DST_PATH}/data"
 jq -n --arg bucket "$STORAGE_SOURCE_BUCKET" --arg path "$TMP_BACKUP_PATH" '{"storage_source": {"gcs": {"bucket":$bucket}}, "storage_destination":{"file": {"path": $path}}}' > /tmp/migration.json
 
 # Fetch Data
-vault operator migrate -config /tmp/migration.json > /dev/null
+vault operator migrate -config /tmp/migration.json 2>&1  | egrep -v "\[INFO\]"
 
 # Cleanup Backup
 rm -f $TMP_BACKUP_PATH/_vault-root
 rm -f $TMP_BACKUP_PATH/_vault-unseal*
 
 # Move data in final destination
-mv "${STORAGE_DST_PATH}/data" "$STORAGE_DST_PATH}/data.old"
+mv "${STORAGE_DST_PATH}/data" "${STORAGE_DST_PATH}/data.old"
 mv "${TMP_BACKUP_PATH}" "${STORAGE_DST_PATH}/data"
 rm -rf "${STORAGE_DST_PATH}/data.old"
 
