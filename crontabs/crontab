@@ -1,2 +1,2 @@
 # Run once every hour
-@hourly /usr/local/bin/vault-migrate-backup.sh
+@hourly /usr/local/bin/vault-migrate-gcs-file.sh
