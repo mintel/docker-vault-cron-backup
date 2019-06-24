@@ -32,5 +32,5 @@ RUN adduser -D -s /bin/bash mintel
 USER mintel
 
 ENTRYPOINT ["/usr/local/bin/supercronic"]
-CMD ["-prometheus-listen-address","8888","/etc/crontabs/crontab"]
+CMD ["-prometheus-listen-address","0.0.0.0:8888","/etc/crontabs/crontab"]
 
