@@ -2,8 +2,6 @@
 
 set -e                                     
 set -o pipefail                                                                                                                                                               
-set -x
-
 
 [[ -z $TRACE ]] || set -x
    
@@ -59,7 +57,7 @@ rm -f $TMP_BACKUP_PATH/_vault-unseal*
 
 # Move data in final destination
 mv "${STORAGE_DST_PATH}/data" "$STORAGE_DST_PATH}/data.old"
-mv "${TMP_BACKUP_PATH}" "$STORAGE_DST_PATH}/data"
-rm -rf "$STORAGE_DST_PATH}/data.old"
+mv "${TMP_BACKUP_PATH}" "${STORAGE_DST_PATH}/data"
+rm -rf "${STORAGE_DST_PATH}/data.old"
 
 echo "Backup Complete at `date`"
