@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 set -e                                     
 set -o pipefail                                                                                                                                                               
 
@@ -32,40 +31,34 @@ need "vault"
 
 # ENV VARS
 
-STORAGE_SOURCE=${STORAGE_SOURCE:-''}
-STORAGE_DST=${STORAGE_DST:-''}
+STORAGE_SOURCE_BUCKET=${STORAGE_SOURCE_BUCKET:-''}
+STORAGE_DST_PATH=${STORAGE_DST_PATH:-''}
+TMP_BACKUP_PATH="$STORAGE_DST_PATH/tmp/backup"
 
-MIGRATION_CONFIG_FILE=${MIGRATION_CONFIG_FILE:-''}
-
-if [[ -z $MIGRATION_CONFIG_FILE ]];then 
-  die "Need a migration configuration file for vault"
+if [[ -z $STORAGE_SOURCE_BUCKET || -z $STORAGE_DST_PATH ]];then 
+  die "Need to define STORAGE_SOURCE_BUCKET and STORAGE_DST_PATH"
 fi
 
-cat $MIGRATION_CONFIG_FILE | jq . 2>/dev/null >/dev/null
-if [[ $? -ne 0 ]]; then
-  die "$MIGRATION_CONFIG_FILE is not a valid JSON file. We only support json config format"
-fi
-
-DESTINATION_PATH="$(cat $MIGRATION_CONFIG_FILE | jq -r .storage_destination.file.path)"
-if [[ -z $DESTINATION_PATH ]]; then
-  die "Could not extract destination path from $MIGRATION_CONFIG_FILE"
-fi
-
+echo "Backup Started at `date`"
 # Cleanup Destination
-rm -rf $DESTINATION_PATH/*
+rm -rf "${TMP_BACKUP_PATH}/*"
+# Create destination
+mkdir -p "${TMP_BACKUP_PATH}"
+mkdir -p "${STORAGE_DST_PATH}/data"
 
-# Create TMP destination
-mkdir -p "/tmp/backup"
-
-cat $MIGRATION_CONFIG_FILE | jq '.storage_destination.file.path = "/tmp/backup"' > /tmp/migration.json
+# Build Config file
+jq -n --arg bucket "$STORAGE_SOURCE_BUCKET" --arg path "$TMP_BACKUP_PATH" '{"storage_source": {"gcs": {"bucket":$bucket}}, "storage_destination":{"file": {"path": $path}}}' > /tmp/migration.json
 
 # Fetch Data
 vault operator migrate -config /tmp/migration.json
 
 # Cleanup Backup
-rm -f /tmp/backup/_vault-root
-rm -f /tmp/backup/_vault-unseal*
+rm -f $TMP_BACKUP_PATH/_vault-root
+rm -f $TMP_BACKUP_PATH/_vault-unseal*
 
 # Move data in final destination
-mv /tmp/backup/* $DESTINATION_PATH
-rm -rf /tmp/backup
+mv "${STORAGE_DST_PATH}/data" "$STORAGE_DST_PATH}/data.old"
+mv "${TMP_BACKUP_PATH}" "$STORAGE_DST_PATH}/data"
+rm -rf "$STORAGE_DST_PATH}/data.old"
+
+echo "Backup Complete at `date`"
