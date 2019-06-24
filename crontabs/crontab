@@ -1,2 +1,3 @@
 # Run once every hour
-@hourly /usr/local/bin/vault-migrate-gcs-file.sh
+# @hourly /usr/local/bin/vault-migrate-gcs-file.sh
+*/10 * * * * flock -xn /tmp/backup.lock /usr/local/bin/vault-migrate-gcs-file.sh
