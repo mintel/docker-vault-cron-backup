@@ -1,4 +1,2 @@
 *
-!bin
-!crontabs
-bin/tests
+!rootfs

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+die() { echo "$*" 1>&2 ; exit 1; }
+
+need() {
+  command -v "$1" &>/dev/null || die "Binary '$1' is missing but required"
+}
+
+need_dir() {
+  [[ -d "$1" ]] || die "Directory '$1' is missing but required"
+}
+
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd > /dev/null
+}
+
+bold () {
+  bold=$(tput bold)
+  normal=$(tput sgr0)
+  echo "${bold}$*${normal}"
+}

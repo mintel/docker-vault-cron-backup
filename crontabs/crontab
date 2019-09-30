@@ -1,2 +1,0 @@
-# Run once every hour
-@hourly echo "Placeholder"
