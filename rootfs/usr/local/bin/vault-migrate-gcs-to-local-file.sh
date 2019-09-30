@@ -4,25 +4,10 @@ set -e
 set -o pipefail                                                                                                                                                               
 
 [[ -z $TRACE ]] || set -x
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $DIR/common.include
    
-die() { echo "$*" 1>&2 ; exit 1; }
-
-need() {
-  command -v "$1" &>/dev/null || die "Binary '$1' is missing but required"
-}
-
-need_dir() {
-  [[ -d "$1" ]] || die "Directory '$1' is missing but required"
-}
-
-pushd () {
-    command pushd "$@" > /dev/null
-}
-
-popd () {
-    command popd > /dev/null
-}
-
 # checking pre-reqs
 
 need "jq"
@@ -60,4 +45,4 @@ mv "${STORAGE_DST_PATH}/data" "${STORAGE_DST_PATH}/data.old"
 mv "${TMP_BACKUP_PATH}" "${STORAGE_DST_PATH}/data"
 rm -rf "${STORAGE_DST_PATH}/data.old"
 
-echo "Backup Complete at `date`"
+echo "Vault Data local backup Complete at `date`"

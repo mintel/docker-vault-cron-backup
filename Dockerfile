@@ -1,36 +1,38 @@
-FROM alpine:3.9
-LABEL maintainer="Francesco Ciocchetti <fciocchetti@mintel.com>"
+FROM mintel/restic-cron:0.1.2
 
-ENV VAULT_VERSION="1.1.3" \
-    VAULT_SHA512="e1dabf807d6eed97df3d71f36e8237d722fa99b3a22f7c88f92b13c9be2843d5733ab1da02ea41a9f7f5b71f991ecf5eba3cc416925feec15fa72ec0217ff50a" \
-    SUPERCRONIC_VERSION="0.1.9" \
-    SUPERCRONIC_SHA512="a1678fcec4182b675c48296cbfc0866a97a737c4ce1b7b59ad36b3cb587d47fa9c7141e9cba07837579605631bc1b0e15afaabb87d26f8b6571a788713896796"
-    
+ENV VAULT_VERSION="1.2.3" \
+    VAULT_SHA512="d012d9c02339a1a7edd07f9e48d2ce039d182324fb492e340b91d645128ce480b6afabf556c61ef8a73b70172e692dc401123b74aaa4604e02a26ec4eaab308c"
 
-
-# Install the restic and vault
-RUN apk update \
-  && apk --no-cache add ca-certificates wget bash jq \
-  && wget -O /usr/local/share/ca-certificates/fakelerootx1.crt https://letsencrypt.org/certs/fakelerootx1.pem \
-  && wget -O /usr/local/share/ca-certificates/fakeleintermediatex1.crt https://letsencrypt.org/certs/fakeleintermediatex1.pem \
-  && update-ca-certificates \
-  && wget -O /tmp/vault-${VAULT_VERSION}.zip "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
-  && wget -O /tmp/supercronic "https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-amd64" \
-  && cd /tmp \
-  && echo "${VAULT_SHA512}  vault-${VAULT_VERSION}.zip" | sha512sum -c - \
-  && echo "${SUPERCRONIC_SHA512}  supercronic" | sha512sum -c - \
-  && unzip -o /tmp/vault-${VAULT_VERSION}.zip -d /usr/local/bin/ \
-  && rm /tmp/vault-${VAULT_VERSION}.zip \
-  && chmod a+x supercronic \
-  && mv supercronic /usr/local/bin \
+USER root
+RUN apk update \                                                          
+  && apk --no-cache add ncurses \
   && rm -rf /var/cache/apk/*
 
-ADD crontabs/* /etc/crontabs/
-ADD bin/* /usr/local/bin/
+# Install the restic and vault
+RUN wget -O /tmp/vault-${VAULT_VERSION}.zip "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
+  && cd /tmp \
+  && echo "${VAULT_SHA512}  vault-${VAULT_VERSION}.zip" | sha512sum -c - \
+  && unzip -o /tmp/vault-${VAULT_VERSION}.zip -d /usr/local/bin/ \
+  && chmod a+x /usr/local/bin/vault
 
-RUN adduser -D -s /bin/bash mintel
+ADD rootfs/ /
+
 USER mintel
+RUN mkdir -p /home/mintel/.config/backup/restic/repos \
+    && mkdir -p /home/mintel/.config/backup/restic/sets
 
 ENTRYPOINT ["/usr/local/bin/supercronic"]
 CMD ["-prometheus-listen-address","0.0.0.0:8888","/etc/crontabs/crontab"]
+
+ARG BUILD_DATE
+ARG VCS_REF
+
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/mintel/docker-vault-cron-backup.git" \
+      org.label-schema.schema-version="1.0.0-rc1" \
+      org.label-schema.name="vault-cron-backup" \
+      org.label-schema.description="An image to perform Vault Data backups from a GCS storage backend to a RESTIC backend" \
+      org.label-schema.vendor="Mintel LTD" \
+      maintainer="Francesco Ciocchetti <fciocchetti@mintel.com>"
 
