@@ -15,24 +15,24 @@ need 'restic'
 need 'restic-runner'
 
 ## Initalize repository if is not already
-bold "Initializing Repo if required"
+echo "Initializing Repo if required"
 restic-runner --repo $BACKUP_REPO command snapshots || restic-runner --repo $BACKUP_REPO init
 echo ""
 
 ## Perform Restic Backup
-bold "Performing Backup for $BACKUP_SET on $BACKUP_REPO"
+echo "Performing Backup for $BACKUP_SET on $BACKUP_REPO"
 restic-runner --repo $BACKUP_REPO --set $BACKUP_SET backup
 echo ""
 
 ## Performing Expire of old snapshots
-bold "Performing Expire for $BACKUP_REPO"
+echo "Performing Expire for $BACKUP_REPO"
 restic-runner --repo $BACKUP_REPO expire 
 echo ""
 
 ## Performing a regular check of data integrity
 ## Since this is an expensive operatorion only run it in 10% of execution of this command
 if [[ $((1 + RANDOM % 10)) -eq 10 ]]; then
-  bold "Performing Check for $BACKUP_REPO"
+  echo "Performing Check for $BACKUP_REPO"
   restic-runner --repo $BACKUP_REPO check
   echo ""
 fi

@@ -17,9 +17,3 @@ pushd () {
 popd () {
     command popd > /dev/null
 }
-
-bold () {
-  bold=$(tput bold)
-  normal=$(tput sgr0)
-  echo "${bold}$*${normal}"
-}

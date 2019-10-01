@@ -18,8 +18,11 @@ source $DIR/common.include
 [[ -z $BACKUP_SET ]] && die "BACKUP_SET must be set"
 
 
-bold "Performing local backup of Vault Data"
+echo "#####################################"
+echo "Performing local backup of Vault Data"
 GOOGLE_APPLICATION_CREDENTIALS=$VAULT_GOOGLE_APPLICATION_CREDENTIALS $DIR/vault-migrate-gcs-to-local-file.sh
 
-bold "Backing up the local data with Restic"
+echo ""
+echo "#####################################"
+echo "Backing up the local data with Restic"
 GOOGLE_APPLICATION_CREDENTIALS=$RESTIC_GOOGLE_APPLICATION_CREDENTIALS GOOGLE_PROJECT_ID=$RESTIC_GOOGLE_PROJECT_ID $DIR/run-restic.sh

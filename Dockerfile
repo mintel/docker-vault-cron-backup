@@ -4,9 +4,6 @@ ENV VAULT_VERSION="1.2.3" \
     VAULT_SHA512="d012d9c02339a1a7edd07f9e48d2ce039d182324fb492e340b91d645128ce480b6afabf556c61ef8a73b70172e692dc401123b74aaa4604e02a26ec4eaab308c"
 
 USER root
-RUN apk update \                                                          
-  && apk --no-cache add ncurses \
-  && rm -rf /var/cache/apk/*
 
 # Install the restic and vault
 RUN wget -O /tmp/vault-${VAULT_VERSION}.zip "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
