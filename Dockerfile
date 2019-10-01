@@ -22,7 +22,7 @@ ENTRYPOINT ["/usr/local/bin/supercronic"]
 CMD ["-prometheus-listen-address","0.0.0.0:8888","/etc/crontabs/crontab"]
 
 # In case you want to run this as a Kubernetes Cronjob to make sure only one is running at any time add kubelock
-COPY --from=mintel/kubelock:latest /usr/local/bin/kubelock /usr/local/bin/
+COPY --from=mintel/kubelock:0.0.1 /usr/local/bin/kubelock /usr/local/bin/
 
 ARG BUILD_DATE
 ARG VCS_REF
