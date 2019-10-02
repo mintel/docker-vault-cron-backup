@@ -1,2 +1,2 @@
-# Run Vault Backups every hour at X:10
-10 * * * * flock -xn /tmp/backup.lock /usr/local/bin/vault-backup.sh
+# Placeholder
+10 * * * * echo "Placeholder Cron"
