@@ -13,7 +13,8 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       maintainer="Francesco Ciocchetti <fciocchetti@mintel.com>"
 
 ENV VAULT_VERSION="1.2.3" \
-    VAULT_SHA512="d012d9c02339a1a7edd07f9e48d2ce039d182324fb492e340b91d645128ce480b6afabf556c61ef8a73b70172e692dc401123b74aaa4604e02a26ec4eaab308c"
+    VAULT_SHA512="d012d9c02339a1a7edd07f9e48d2ce039d182324fb492e340b91d645128ce480b6afabf556c61ef8a73b70172e692dc401123b74aaa4604e02a26ec4eaab308c" \
+    VAULT_MIGRATE_RESET="false"
 
 USER root
 

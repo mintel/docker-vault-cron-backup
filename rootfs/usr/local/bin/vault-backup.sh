@@ -17,6 +17,11 @@ source $DIR/common.include
 [[ -z $BACKUP_REPO ]] && die "BACKUP_REPO must be set"
 [[ -z $BACKUP_SET ]] && die "BACKUP_SET must be set"
 
+if [[ "x$VAULT_MIGRATE_RESET" == "xtrue" ]]; then
+echo "#####################################"
+echo "Performing Reset of backends"
+GOOGLE_APPLICATION_CREDENTIALS=$VAULT_GOOGLE_APPLICATION_CREDENTIALS $DIR/vault-migrate-reset.sh
+fi
 
 echo "#####################################"
 echo "Performing local backup of Vault Data"
