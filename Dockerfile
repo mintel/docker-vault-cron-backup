@@ -1,4 +1,4 @@
-FROM mintel/restic-cron:0.1.3
+FROM mintel/restic-cron:0.2.0
 
 ARG BUILD_DATE
 ARG VCS_REF
@@ -14,7 +14,8 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 
 ENV VAULT_VERSION="1.2.3" \
     VAULT_SHA512="d012d9c02339a1a7edd07f9e48d2ce039d182324fb492e340b91d645128ce480b6afabf556c61ef8a73b70172e692dc401123b74aaa4604e02a26ec4eaab308c" \
-    VAULT_MIGRATE_RESET="false"
+    VAULT_MIGRATE_RESET="false" \
+    VAULT_ROOT_UNSEAL_CLEANUP="true"
 
 USER root
 

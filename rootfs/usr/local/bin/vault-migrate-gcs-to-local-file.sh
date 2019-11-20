@@ -37,8 +37,11 @@ jq -n --arg bucket "$STORAGE_SOURCE_BUCKET" --arg path "$TMP_BACKUP_PATH" '{"sto
 vault operator migrate -config /tmp/migration.json 2>&1  | egrep -v "\[INFO\]"
 
 # Cleanup Backup
-rm -f $TMP_BACKUP_PATH/_vault-root
-rm -f $TMP_BACKUP_PATH/_vault-unseal*
+if [[ "x$VAULT_ROOT_UNSEAL_CLEANUP" == "xtrue" ]]; then
+  echo "Cleaning up root and unseal keys files from backup as requested"
+  rm -f $TMP_BACKUP_PATH/_vault-root
+  rm -f $TMP_BACKUP_PATH/_vault-unseal*
+fi
 
 # Move data in final destination
 mv "${STORAGE_DST_PATH}/data" "${STORAGE_DST_PATH}/data.old"
